@@ -3,6 +3,7 @@ import Head from "next/head";
 import Navbar from "../components/organisms/navbar";
 import { Table, Breadcrumb } from "react-bootstrap";
 import { BiEdit, BiTrash, BiPlusCircle } from "react-icons/bi";
+import { FiSearch } from "react-icons/fi";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useRouter } from "next/router";
 export default function Home() {
   const router = useRouter();
   const [state, setState] = useState(0);
+  const [search, setSearch] = useState(0);
   const [barang, setBarang] = useState([]);
   const [jenis, setJenis] = useState([]);
   const [transaksi, setTransaksi] = useState([]);
@@ -19,8 +21,11 @@ export default function Home() {
   useEffect(() => {
     getBarang();
     getJenis();
-    getTransaksi();
   }, [state]);
+
+  useEffect(() => {
+    getTransaksi();
+  }, [search]);
 
   const getBarang = () => {
     axios
@@ -223,20 +228,19 @@ export default function Home() {
                           type="button"
                           class="btn btn-danger btn-sm mx-1"
                           onClick={(e) => {
-                            handleDeleteJenis(
-                              item.nama_jenis,
-                              item.id_jenis
-                            );
+                            handleDeleteJenis(item.nama_jenis, item.id_jenis);
                           }}
                         >
                           <BiTrash />
                         </button>
-                        <button
-                          type="button"
-                          class="btn btn-warning btn-sm mx-1"
-                        >
-                          <BiEdit />
-                        </button>
+                        <Link href={"/editJenis/" + item.id_jenis} passHref>
+                          <button
+                            type="button"
+                            class="btn btn-warning btn-sm mx-1"
+                          >
+                            <BiEdit />
+                          </button>
+                        </Link>
                       </td>
                     </tr>
                   </>
@@ -248,6 +252,24 @@ export default function Home() {
         <div className="row my-4 justify-content-center">
           <div className="col">
             <h5>Transaksi</h5>
+            <div className="row my-3">
+              <div className="col">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+              >
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search"
+                  required
+                  onChange={(e) => setKeyword(e.target.value)}
+                />
+              </form>
+              </div>
+            </div>
             <Table striped bordered hover>
               <thead>
                 <tr>
