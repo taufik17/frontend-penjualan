@@ -10,18 +10,18 @@ import Swal from "sweetalert2";
 
 function TambahJenis() {
   const router = useRouter();
-  const [nama, setNama] = useState("");
+  const [nama_jenis, setNama] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
     setIsLoading(true);
     axios
-      .post("/api/simpanBarang", { nama_barang: nama, stok, jenis })
+      .post("/api/simpanJenis", { nama_jenis })
       .then((res) => {
         Swal.fire({
           icon: "success",
           title: "Succseed",
-          text: "Berhasil Tambah barang",
+          text: "Berhasil Tambah Jenis",
         })
           .then((result) => (result.isConfirmed ? router.replace("/") : null));
       })

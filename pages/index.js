@@ -72,7 +72,45 @@ export default function Home() {
             Swal.fire({
               icon: "success",
               title: "Succseed",
-              text: "Berhasil Tambah barang",
+              text: "Berhasil Hapus barang",
+            }).then((result) => {
+              setState(+1);
+              result.isConfirmed ? router.replace("/") : null;
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err?.response?.data?.message,
+            });
+          })
+          .finally(() => {
+            setState(+1);
+          });
+      }
+    });
+  };
+
+  const handleDeleteJenis = (name, id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Delete ${name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .post("api/deleteJenis", { id })
+          .then((res) => {
+            Swal.fire({
+              icon: "success",
+              title: "Succseed",
+              text: "Berhasil Hapus Jenis",
             }).then((result) => {
               setState(+1);
               result.isConfirmed ? router.replace("/") : null;
@@ -184,6 +222,12 @@ export default function Home() {
                         <button
                           type="button"
                           class="btn btn-danger btn-sm mx-1"
+                          onClick={(e) => {
+                            handleDeleteJenis(
+                              item.nama_jenis,
+                              item.id_jenis
+                            );
+                          }}
                         >
                           <BiTrash />
                         </button>
