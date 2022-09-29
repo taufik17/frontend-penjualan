@@ -144,12 +144,14 @@ export default function Home() {
                         >
                           <BiTrash />
                         </button>
-                        <button
-                          type="button"
-                          class="btn btn-warning btn-sm mx-1"
-                        >
-                          <BiEdit />
-                        </button>
+                        <Link href={"/editBarang/" + item.id_barang} passHref>
+                          <button
+                            type="button"
+                            class="btn btn-warning btn-sm mx-1"
+                          >
+                            <BiEdit />
+                          </button>
+                        </Link>
                       </td>
                     </tr>
                   </>
@@ -159,9 +161,11 @@ export default function Home() {
           </div>
           <div className="col-4">
             <h5>Jenis</h5>
-            <button type="button" class="btn btn-primary mb-2">
-              <BiPlusCircle /> Tambah Jenis barang
-            </button>
+            <Link href="/tambahJenis" passHref>
+              <button type="button" class="btn btn-primary mb-2">
+                <BiPlusCircle /> Tambah Jenis barang
+              </button>
+            </Link>
             <Table striped bordered hover>
               <thead>
                 <tr>
