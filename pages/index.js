@@ -3,7 +3,6 @@ import Head from "next/head";
 import Navbar from "../components/organisms/navbar";
 import { Table, Breadcrumb } from "react-bootstrap";
 import { BiEdit, BiTrash, BiPlusCircle } from "react-icons/bi";
-import { FiSearch } from "react-icons/fi";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
@@ -13,10 +12,51 @@ import { useRouter } from "next/router";
 export default function Home() {
   const router = useRouter();
   const [state, setState] = useState(0);
-  const [search, setSearch] = useState(0);
   const [barang, setBarang] = useState([]);
   const [jenis, setJenis] = useState([]);
   const [transaksi, setTransaksi] = useState([]);
+
+  const [awalTinggi, setAwalTertinggi] = useState(null);
+  const [akhirTinggi, setAkhirTertinggi] = useState(null);
+  const [hasilTertinggi, setHasilTertinggi] = useState(null);
+  
+  const [awalRendah, setAwalTerRendah] = useState(null);
+  const [akhirRendah, setAkhirTerRendah] = useState(null);
+  const [hasilTerendah, setHasilTerendah] = useState(null);
+
+  const [keyword, setKeyword] = useState("");
+  const handleSearch = () => {
+    axios
+      .post("/api/searchTransaksi", { keyword })
+      .then((res) => {
+        setTransaksi(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleTertinggi = () => {
+    axios
+      .post("/api/transaksiTinggi", { awal: awalTinggi, akhir: akhirTinggi })
+      .then((res) => {
+        setHasilTertinggi(res?.data?.data.slice(0, 1));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  
+  const handleTerendah = () => {
+    axios
+      .post("/api/transaksiRendah", { awal: awalRendah, akhir: akhirRendah })
+      .then((res) => {
+        setHasilTerendah(res?.data?.data.slice(0, 1));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
     getBarang();
@@ -25,7 +65,7 @@ export default function Home() {
 
   useEffect(() => {
     getTransaksi();
-  }, [search]);
+  }, []);
 
   const getBarang = () => {
     axios
@@ -254,20 +294,19 @@ export default function Home() {
             <h5>Transaksi</h5>
             <div className="row my-3">
               <div className="col">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSearch();
-                }}
-              >
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search"
-                  required
-                  onChange={(e) => setKeyword(e.target.value)}
-                />
-              </form>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSearch();
+                  }}
+                >
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search"
+                    onChange={(e) => setKeyword(e.target.value)}
+                  />
+                </form>
               </div>
             </div>
             <Table striped bordered hover>
@@ -294,6 +333,102 @@ export default function Home() {
                 ))}
               </tbody>
             </Table>
+          </div>
+        </div>
+        <div className="row my-4">
+          <div className="col-6">
+            <div className="card">
+              <div className="card-header">
+                <h6>Transaksi Tertinggi</h6>
+              </div>
+              <div className="card-body">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleTertinggi();
+                  }}
+                >
+                  <div className="d-flex justify-content-between my-2">
+                    <input
+                      type="date"
+                      onChange={(e) => setAwalTertinggi(e.target.value)}
+                    />
+                    <p>sampai</p>
+                    <input
+                      type="date"
+                      onChange={(e) => setAkhirTertinggi(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary mb-2">
+                    cari
+                  </button>
+                </form>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>
+                        {hasilTertinggi ? (
+                          <>
+                            {hasilTertinggi.map((item, index) => (
+                              <>{item.nama_jenis} {" "} {item.jumlah} {" "} Transaksi</>
+                            ))}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </div>
+            </div>
+          </div>
+          <div className="col-6">
+            <div className="card">
+              <div className="card-header">
+                <h6>Transaksi Terendah</h6>
+              </div>
+              <div className="card-body">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleTerendah();
+                  }}
+                >
+                  <div className="d-flex justify-content-between my-2">
+                    <input
+                      type="date"
+                      onChange={(e) => setAwalTerRendah(e.target.value)}
+                    />
+                    <p>sampai</p>
+                    <input
+                      type="date"
+                      onChange={(e) => setAkhirTerRendah(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary mb-2">
+                    cari
+                  </button>
+                </form>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>
+                        {hasilTerendah ? (
+                          <>
+                            {hasilTerendah.map((item, index) => (
+                              <>{item.nama_jenis} {" "} {item.jumlah} {" "} Transaksi</>
+                            ))}
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
