@@ -6,8 +6,12 @@ import { BiEdit, BiTrash, BiPlusCircle } from "react-icons/bi";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
+import Swal from "sweetalert2";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
+  const [state, setState] = useState(0);
   const [barang, setBarang] = useState([]);
   const [jenis, setJenis] = useState([]);
   const [transaksi, setTransaksi] = useState([]);
@@ -16,7 +20,7 @@ export default function Home() {
     getBarang();
     getJenis();
     getTransaksi();
-  }, []);
+  }, [state]);
 
   const getBarang = () => {
     axios
@@ -49,6 +53,44 @@ export default function Home() {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleDeleteBarang = (name, id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Delete ${name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .post("api/deleteBarang", { id })
+          .then((res) => {
+            Swal.fire({
+              icon: "success",
+              title: "Succseed",
+              text: "Berhasil Tambah barang",
+            }).then((result) => {
+              setState(+1);
+              result.isConfirmed ? router.replace("/") : null;
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err?.response?.data?.message,
+            });
+          })
+          .finally(() => {
+            setState(+1);
+          });
+      }
+    });
   };
 
   return (
@@ -93,6 +135,12 @@ export default function Home() {
                         <button
                           type="button"
                           class="btn btn-danger btn-sm mx-1"
+                          onClick={(e) => {
+                            handleDeleteBarang(
+                              item.nama_barang,
+                              item.id_barang
+                            );
+                          }}
                         >
                           <BiTrash />
                         </button>
