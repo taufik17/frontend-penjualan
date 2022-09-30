@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import Navbar from "../components/organisms/navbar";
-import { Table, Breadcrumb } from "react-bootstrap";
+import { Table, Breadcrumb, Modal, Button } from "react-bootstrap";
 import { BiEdit, BiTrash, BiPlusCircle } from "react-icons/bi";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
+import TambahBarang from "./tambahBarang";
+import Tes from "./tes";
 
 export default function Home() {
   const router = useRouter();
@@ -19,12 +21,48 @@ export default function Home() {
   const [awalTinggi, setAwalTertinggi] = useState(null);
   const [akhirTinggi, setAkhirTertinggi] = useState(null);
   const [hasilTertinggi, setHasilTertinggi] = useState(null);
-  
+
   const [awalRendah, setAwalTerRendah] = useState(null);
   const [akhirRendah, setAkhirTerRendah] = useState(null);
   const [hasilTerendah, setHasilTerendah] = useState(null);
 
+  const [message, setMessage] = useState("");
+
+  // 👇️ called every time input's value changes
+  const handleChange = (event) => {
+    setMessage(event.target.value);
+  };
+
+  const [showTambahBarang, setShowTambahBarang] = useState(false);
+
+  const handleCloseTambahBarang = () => setShowTambahBarang(false);
+  const handleShowTambahBarang = () => setShowTambahBarang(true);
+
+  const [showEditBarang, setShowEditBarang] = useState(false);
+  const [dataEditBarang, setDataEditBarang] = useState([]);
+
+  const handleCloseEditBarang = () => setShowEditBarang(false);
+  const handleShowEditBarang = (id_barang) => {
+    setShowEditBarang(true);
+    axios
+      .post("/api/barangById", { id_barang })
+      .then((res) => {
+        setDataEditBarang(res?.data?.data);
+        setMessage(res?.data?.data[0]?.nama_barang);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const [nama, setNama] = useState("");
+  const [stok, setStok] = useState("");
+  const [jenis_barang, setJenisBarang] = useState("");
+
+  const handleState = () => setState(state + 1);
+
   const [keyword, setKeyword] = useState("");
+
   const handleSearch = () => {
     axios
       .post("/api/searchTransaksi", { keyword })
@@ -46,7 +84,7 @@ export default function Home() {
         console.log(err);
       });
   };
-  
+
   const handleTerendah = () => {
     axios
       .post("/api/transaksiRendah", { awal: awalRendah, akhir: akhirRendah })
@@ -61,11 +99,8 @@ export default function Home() {
   useEffect(() => {
     getBarang();
     getJenis();
-  }, [state]);
-
-  useEffect(() => {
     getTransaksi();
-  }, []);
+  }, [state]);
 
   const getBarang = () => {
     axios
@@ -119,8 +154,10 @@ export default function Home() {
               title: "Succseed",
               text: "Berhasil Hapus barang",
             }).then((result) => {
-              setState(+1);
-              result.isConfirmed ? router.replace("/") : null;
+              setState(state + 1);
+              setTimeout(() => {
+                router.replace("/");
+              }, 1800);
             });
           })
           .catch((err) => {
@@ -132,7 +169,7 @@ export default function Home() {
             });
           })
           .finally(() => {
-            setState(+1);
+            setState(state + 1);
           });
       }
     });
@@ -157,7 +194,7 @@ export default function Home() {
               title: "Succseed",
               text: "Berhasil Hapus Jenis",
             }).then((result) => {
-              setState(+1);
+              setState(state + 1);
               result.isConfirmed ? router.replace("/") : null;
             });
           })
@@ -170,7 +207,7 @@ export default function Home() {
             });
           })
           .finally(() => {
-            setState(+1);
+            setState(state + 1);
           });
       }
     });
@@ -191,11 +228,13 @@ export default function Home() {
         <div className="row">
           <div className="col-8">
             <h5>Barang</h5>
-            <Link href="/tambahBarang" passHref>
-              <button type="button" class="btn btn-primary mb-2">
-                <BiPlusCircle /> Tambah Barang
-              </button>
-            </Link>
+            <Button
+              variant="primary"
+              className="mb-3"
+              onClick={handleShowTambahBarang}
+            >
+              <BiPlusCircle /> Tambah Barang
+            </Button>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -227,14 +266,15 @@ export default function Home() {
                         >
                           <BiTrash />
                         </button>
-                        <Link href={"/editBarang/" + item.id_barang} passHref>
-                          <button
-                            type="button"
-                            class="btn btn-warning btn-sm mx-1"
-                          >
-                            <BiEdit />
-                          </button>
-                        </Link>
+                        <button
+                          type="button"
+                          className="btn btn-warning btn-sm mx-1"
+                          onClick={(e) => {
+                            handleShowEditBarang(item.id_barang);
+                          }}
+                        >
+                          <BiEdit />
+                        </button>
                       </td>
                     </tr>
                   </>
@@ -276,7 +316,10 @@ export default function Home() {
                         <Link href={"/editJenis/" + item.id_jenis} passHref>
                           <button
                             type="button"
-                            class="btn btn-warning btn-sm mx-1"
+                            className="btn btn-warning btn-sm mx-1"
+                            onClick={(e) => {
+                              handleDeleteJenis(item.nama_jenis, item.id_jenis);
+                            }}
                           >
                             <BiEdit />
                           </button>
@@ -370,7 +413,9 @@ export default function Home() {
                         {hasilTertinggi ? (
                           <>
                             {hasilTertinggi.map((item, index) => (
-                              <>{item.nama_jenis} {" "} {item.jumlah} {" "} Transaksi</>
+                              <>
+                                {item.nama_jenis} {item.jumlah} Transaksi
+                              </>
                             ))}
                           </>
                         ) : (
@@ -417,7 +462,9 @@ export default function Home() {
                         {hasilTerendah ? (
                           <>
                             {hasilTerendah.map((item, index) => (
-                              <>{item.nama_jenis} {" "} {item.jumlah} {" "} Transaksi</>
+                              <>
+                                {item.nama_jenis} {item.jumlah} Transaksi
+                              </>
                             ))}
                           </>
                         ) : (
@@ -432,6 +479,49 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <Modal
+        show={showTambahBarang}
+        onHide={handleCloseTambahBarang}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Barang</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <TambahBarang
+            tutup={handleCloseTambahBarang}
+            ubahState={handleState}
+          />
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showEditBarang}
+        onHide={handleCloseEditBarang}
+        backdrop="static"
+        keyboard={false}
+      >
+        {dataEditBarang.map((item) => (
+          <>
+            <Modal.Header closeButton>
+              <Modal.Title>Edit {item.nama_barang}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              
+              <input
+                id="message"
+                name="message"
+                type="text"
+                className="form-control"
+                onChange={handleChange}
+                value={message}
+              />
+            </Modal.Body>
+          </>
+        ))}
+      </Modal>
     </>
   );
 }
