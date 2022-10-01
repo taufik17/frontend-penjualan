@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const { nama_barang, stok, jenis } = req.body;
 
   axios
-    .post(`${process.env.BASE_URL}/barang/tambah`, { nama_barang, stok, jenis })
+    .post(`${process.env.NEXT_PUBLIC_BASE_URL}/barang/tambah`, { nama_barang, stok, jenis })
     .then((response) => {
         res.status(200).json(response?.data)
     })

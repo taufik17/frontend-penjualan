@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const { keyword } = req.body;
 
   axios
-    .post(`${process.env.BASE_URL}/barang/search`, { keyword })
+    .post(`${process.env.NEXT_PUBLIC_BASE_URL}/barang/search`, { keyword })
     .then((response) => {
         res.status(200).json(response?.data)
     })

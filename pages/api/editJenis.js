@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const { id_jenis, nama_jenis } = req.body;
 
   axios
-    .patch(`${process.env.BASE_URL}/jenis/edit`, {
+    .patch(`${process.env.NEXT_PUBLIC_BASE_URL}/jenis/edit`, {
       id_jenis,
       nama_jenis,
     })

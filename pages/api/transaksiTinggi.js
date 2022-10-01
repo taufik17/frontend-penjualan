@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const { awal, akhir } = req.body;
 
   axios
-    .post(`${process.env.BASE_URL}/transaksi/tertinggi`, { awal, akhir })
+    .post(`${process.env.NEXT_PUBLIC_BASE_URL}/transaksi/tertinggi`, { awal, akhir })
     .then((response) => {
         res.status(200).json(response?.data)
     })
