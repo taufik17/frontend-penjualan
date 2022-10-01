@@ -9,6 +9,7 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import TambahBarang from "./tambahBarang";
+import TambahJenis from "./tambahJenis";
 import { BiSave } from "react-icons/bi";
 
 export default function Home() {
@@ -26,6 +27,11 @@ export default function Home() {
   const [awalRendah, setAwalTerRendah] = useState(null);
   const [akhirRendah, setAkhirTerRendah] = useState(null);
   const [hasilTerendah, setHasilTerendah] = useState(null);
+
+  // State Tambah Jenis
+  const [showTambahJenis, setShowTambahJenis] = useState(false);
+  const handleCloseTambahJenis = () => setShowTambahJenis(false);
+  const handleShowTambahJenis = () => setShowTambahJenis(true);
 
   // State Tambah Barang
   const [showTambahBarang, setShowTambahBarang] = useState(false);
@@ -247,7 +253,7 @@ export default function Home() {
       .finally(() => {
         setIsLoading(false);
         setState(state + 1);
-        setShowEditBarang(false)
+        setShowEditBarang(false);
       });
   };
 
@@ -322,11 +328,13 @@ export default function Home() {
           </div>
           <div className="col-4">
             <h5>Jenis</h5>
-            <Link href="/tambahJenis" passHref>
-              <button type="button" class="btn btn-primary mb-2">
-                <BiPlusCircle /> Tambah Jenis barang
-              </button>
-            </Link>
+            <Button
+              variant="primary"
+              className="mb-3"
+              onClick={handleShowTambahJenis}
+            >
+              <BiPlusCircle /> Tambah Jenis barang
+            </Button>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -517,6 +525,21 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Modal Tambah Jenis Barang */}
+      <Modal
+        show={showTambahJenis}
+        onHide={handleCloseTambahJenis}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Jenis</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <TambahJenis tutup={handleCloseTambahJenis} ubahState={handleState} />
+        </Modal.Body>
+      </Modal>
 
       {/* Modal Tambah Barang */}
       <Modal

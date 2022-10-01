@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
-import Navbar from "../components/organisms/navbar";
-import { Breadcrumb, Col, Row } from "react-bootstrap";
 import { BiSave } from "react-icons/bi";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
 
