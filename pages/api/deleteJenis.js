@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const { id } = req.body;
 
   axios
-    .delete(`${process.env.BASE_URL}/jenis/delete`, {
+    .delete(`${process.env.NEXT_PUBLIC_BASE_URL}/jenis/delete`, {
       data: {
         id_jenis: id,
       },
