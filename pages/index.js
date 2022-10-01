@@ -503,7 +503,7 @@ export default function Home() {
           </div>
         </div>
         <div className="row my-4">
-          <div className="col-6">
+          <div className="col-lg-6 col-md-6 mb-4">
             <div className="card">
               <div className="card-header">
                 <h6>Transaksi Tertinggi</h6>
@@ -552,7 +552,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-lg-6 col-md-6">
             <div className="card">
               <div className="card-header">
                 <h6>Transaksi Terendah</h6>
