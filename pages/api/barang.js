@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default function handler(req, res) {
   axios
-    .get(`${process.env.BASE_URL}/barang`)
+    .get(`${process.env.NEXT_PUBLIC_BASE_URL}/barang`)
     .then((response) => {
       res.status(200).json(response?.data);
     })
