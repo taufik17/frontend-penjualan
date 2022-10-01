@@ -9,7 +9,7 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import TambahBarang from "./tambahBarang";
-import Tes from "./tes";
+import { BiSave } from "react-icons/bi";
 
 export default function Home() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function Home() {
   const [barang, setBarang] = useState([]);
   const [jenis, setJenis] = useState([]);
   const [transaksi, setTransaksi] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [awalTinggi, setAwalTertinggi] = useState(null);
   const [akhirTinggi, setAkhirTertinggi] = useState(null);
@@ -26,21 +27,27 @@ export default function Home() {
   const [akhirRendah, setAkhirTerRendah] = useState(null);
   const [hasilTerendah, setHasilTerendah] = useState(null);
 
-  const [message, setMessage] = useState("");
-
-  // 👇️ called every time input's value changes
-  const handleChange = (event) => {
-    setMessage(event.target.value);
-  };
-
+  // State Tambah Barang
   const [showTambahBarang, setShowTambahBarang] = useState(false);
-
   const handleCloseTambahBarang = () => setShowTambahBarang(false);
   const handleShowTambahBarang = () => setShowTambahBarang(true);
 
+  // State Edit Barang
   const [showEditBarang, setShowEditBarang] = useState(false);
   const [dataEditBarang, setDataEditBarang] = useState([]);
-
+  const [idBarangEdit, setIdBarangEdit] = useState("");
+  const [namaBarangEdit, setNamaBarangEdit] = useState("");
+  const [stokBarangEdit, setStokBarangEdit] = useState("");
+  const [jenisBarangEdit, setJenisBarangEdit] = useState("");
+  const handleEditNamaBarang = (event) => {
+    setNamaBarangEdit(event.target.value);
+  };
+  const handleEditStokBarang = (event) => {
+    setStokBarangEdit(event.target.value);
+  };
+  const handleEditJenisBarang = (event) => {
+    setJenisBarangEdit(event.target.value);
+  };
   const handleCloseEditBarang = () => setShowEditBarang(false);
   const handleShowEditBarang = (id_barang) => {
     setShowEditBarang(true);
@@ -48,16 +55,15 @@ export default function Home() {
       .post("/api/barangById", { id_barang })
       .then((res) => {
         setDataEditBarang(res?.data?.data);
-        setMessage(res?.data?.data[0]?.nama_barang);
+        setIdBarangEdit(id_barang);
+        setNamaBarangEdit(res?.data?.data[0]?.nama_barang);
+        setStokBarangEdit(res?.data?.data[0]?.stok);
+        setJenisBarangEdit(res?.data?.data[0]?.jenis_barang);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  const [nama, setNama] = useState("");
-  const [stok, setStok] = useState("");
-  const [jenis_barang, setJenisBarang] = useState("");
 
   const handleState = () => setState(state + 1);
 
@@ -211,6 +217,38 @@ export default function Home() {
           });
       }
     });
+  };
+
+  const handleSubmitEditBarang = () => {
+    setIsLoading(true);
+    axios
+      .patch("/api/editBarang", {
+        id_barang: idBarangEdit,
+        nama_barang: namaBarangEdit,
+        stok: stokBarangEdit,
+        jenis_barang: jenisBarangEdit,
+      })
+      .then((res) => {
+        Swal.fire({
+          icon: "success",
+          title: "Succseed",
+          text: "Berhasil Edit barang",
+        }).then((result) => (result.isConfirmed ? router.replace("/") : null));
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: err?.response?.data?.message,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setState(state + 1);
+        setShowEditBarang(false)
+      });
   };
 
   return (
@@ -480,6 +518,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Modal Tambah Barang */}
       <Modal
         show={showTambahBarang}
         onHide={handleCloseTambahBarang}
@@ -497,6 +536,7 @@ export default function Home() {
         </Modal.Body>
       </Modal>
 
+      {/* Modal Edit Barang */}
       <Modal
         show={showEditBarang}
         onHide={handleCloseEditBarang}
@@ -509,15 +549,80 @@ export default function Home() {
               <Modal.Title>Edit {item.nama_barang}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              
-              <input
-                id="message"
-                name="message"
-                type="text"
-                className="form-control"
-                onChange={handleChange}
-                value={message}
-              />
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmitEditBarang();
+                }}
+              >
+                <div className="mb-3">
+                  <label for="namaBarang" className="form-label">
+                    Nama barang
+                  </label>
+                  <input
+                    type="text"
+                    id="namaBarang"
+                    className="form-control"
+                    placeholder="Nama barang"
+                    onChange={handleEditNamaBarang}
+                    value={namaBarangEdit}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label for="StokBarang" className="form-label">
+                    Stok barang
+                  </label>
+                  <input
+                    type="number"
+                    value={stokBarangEdit}
+                    className="form-control"
+                    id="StokBarang"
+                    placeholder="Stok barang"
+                    onChange={handleEditStokBarang}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label for="jenisBarang" className="form-label">
+                    Jenis barang
+                  </label>
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    onChange={handleEditJenisBarang}
+                  >
+                    {jenis.map((jen) => (
+                      <>
+                        {jenisBarangEdit == jen.id_jenis ? (
+                          <>
+                            <option selected value={jenisBarangEdit}>
+                              {jen.nama_jenis}
+                            </option>
+                          </>
+                        ) : (
+                          <>
+                            <option value={jen.id_jenis}>
+                              {jen.nama_jenis}
+                            </option>
+                          </>
+                        )}
+                      </>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    "Menyimpan..."
+                  ) : (
+                    <>
+                      <BiSave /> Simpan
+                    </>
+                  )}
+                </button>
+              </form>
             </Modal.Body>
           </>
         ))}

@@ -14,6 +14,10 @@ function EditBarang(props) {
   const [stok, setStok] = useState(props?.data[0]?.stok);
   const [jenis_barang, setJenis] = useState(props?.data[0]?.jenis_barang);
 
+  const handleNama = (event) => {
+    setNama(event.target.value);
+  };
+
   useEffect(() => {
     getJenis();
   }, []);
