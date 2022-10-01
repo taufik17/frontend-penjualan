@@ -350,7 +350,7 @@ export default function Home() {
           <Breadcrumb.Item active>Home</Breadcrumb.Item>
         </Breadcrumb>
         <div className="row">
-          <div className="col-8">
+          <div className="col-lg-8 col-md-6">
             <h5>Barang</h5>
             <Button
               variant="primary"
@@ -406,7 +406,7 @@ export default function Home() {
               </tbody>
             </Table>
           </div>
-          <div className="col-4">
+          <div className="col-lg-4 col-md-6">
             <h5>Jenis</h5>
             <Button
               variant="primary"
