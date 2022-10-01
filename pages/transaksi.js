@@ -155,7 +155,7 @@ function Transaksi(props) {
       
       <div className="container">
         <div className="row">
-          <div className="col-8">
+          <div className="col-lg-8 col-md-6 mb-3">
             <div className="card">
               <div className="card-header">
                 <h6>Data barang</h6>
@@ -195,7 +195,7 @@ function Transaksi(props) {
               </div>
             </div>
           </div>
-          <div className="col-4">
+          <div className="col-lg-4 col-md-6">
             <div className="card">
               <div className="card-header">
                 <h6>Keranjang</h6>
